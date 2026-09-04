@@ -1,50 +1,50 @@
-# MITS Campus Navigation System 🗺️🎓
+# MITS Campus Navigation System
 
-A full-stack, mobile-friendly 3D campus navigation system built specifically for **Muthoot Institute of Technology and Science (MITS)**. This application was developed to help students, faculty, and visitors seamlessly navigate the complex layout of the MITS college campus using a custom Dijkstra-based pathfinding algorithm and an interactive 3D floor plan.
+An enterprise-grade, full-stack 3D geospatial navigation platform engineered for the **Muthoot Institute of Technology and Science (MITS)**. This application delivers real-time, interactive indoor and outdoor routing, solving complex spatial navigation challenges using optimized graph algorithms and WebGL-based 3D rendering.
 
-## ✨ Key Features
-* **Interactive 3D Maps**: Built with React-Three-Fiber to provide an intuitive, rotatable isometric 3D view of the MITS campus buildings.
-* **Smart Pathfinding (Dijkstra)**: Calculates the absolute shortest walking path between any two locations on campus.
-* **Accessibility Modes**: Users can toggle "Wheelchair Accessible" routing, which automatically reroutes the path to avoid stairs and prioritize elevators.
-* **Cross-Floor Navigation**: Seamlessly guides users between different floors (Basement, Ground, First Floor) using visually animated elevators and stairs.
-* **QR Code Integration**: Scan physical QR codes placed around the MITS campus to instantly detect your current location and get directions.
-* **Admin Dashboard**: A secure, JWT-authenticated control panel to manage nodes, drawing edges, faculty office locations, and live campus events.
+## System Architecture & Capabilities
+* **Interactive 3D Geospatial Engine**: Leverages `react-three-fiber` and `Three.js` to render highly performant, rotatable isometric 3D models of multi-story infrastructure.
+* **Algorithmic Pathfinding**: Implements a highly optimized Dijkstra's Shortest Path algorithm across a custom node-edge graph architecture to deliver instantaneous route calculations.
+* **Dynamic Accessibility Routing**: Features context-aware routing parameters that dynamically recalculate traversal graphs to avoid stairs and prioritize elevators for wheelchair accessibility.
+* **Multi-Layer Floor Traversal**: Programmatically handles vertical graph traversal, seamlessly animating user paths across varying Z-axis elevations (e.g.gg, Basement to First Floor).
+* **Location Intelligence (QR)**: Integrates device camera APIs with deterministic QR parsing to establish exact user coordinates in physical space.
+* **Secure Content Management System (CMS)**: Includes a role-based Admin Dashboard protected by stateless JWT authentication and bcrypt password hashing for managing spatial graph data (Nodes, Edges, Facilities) in real-time.
 
-## 🛠️ Tech Stack & Architecture
-* **Frontend**: React.js, Vite, React-Three-Fiber (3D engine), Three.js
-* **Backend**: Node.js, Express.js
-* **Database**: MongoDB, Mongoose
-* **Security & Auth**: JWT (JSON Web Tokens), Bcrypt.js password hashing
-* **File Processing**: Multer (for SVG floor plan uploads)
+## Technology Stack
+* **Client-Side Environment**: React.js, Vite, React-Three-Fiber, Three.js
+* **Server-Side Environment**: Node.js, Express.js REST API
+* **Database Layer**: MongoDB (NoSQL), Object Data Modeling via Mongoose
+* **Security**: JWT (JSON Web Tokens), Bcrypt.js Cryptography
+* **Asset Pipeline**: Multer middleware for robust multipart/form-data vector graphic processing.
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 * Node.js (v16+)
-* MongoDB
+* MongoDB instance
 
 ### Installation
 1. Clone the repository:
    ```bash
    git clone https://github.com/yourusername/mits-campus-navigation.git
    ```
-2. Install Backend Dependencies:
+2. Initialize Backend Environment:
    ```bash
    cd backend
    npm install
    ```
-3. Install Frontend Dependencies:
+3. Initialize Frontend Environment:
    ```bash
    cd campus-navigation-main
    npm install
    ```
 
-### Running the App
-Run the provided startup script from the root directory to launch both servers simultaneously:
+### Execution
+Run the provided bootstrap script from the root directory to initiate concurrent microservices:
 ```bash
 ./start.bat
 ```
 Navigate to `http://localhost:5173` in your browser.
 
-## 🎓 Academic Context & Showcase
-This project was developed as an MCA Mini Project. It serves as a practical demonstration of integrating complex Data Structures (Graph Theory & Dijkstra's Algorithm) into a modern Full-Stack Web Application (MERN), while also exploring 3D Graphics rendering in the browser. 
+## Engineering Showcase
+This platform was developed as a comprehensive demonstration of applied software engineering principles. It highlights the successful integration of complex Data Structures (Graph Theory), scalable Full-Stack Web Architecture (MERN), and performant Client-Side 3D Graphics rendering within a production-ready application environment.
