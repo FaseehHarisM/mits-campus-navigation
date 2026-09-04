@@ -133,7 +133,7 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
       <div className="admin-mobile-header" style={{ display: 'none', padding: '16px 24px', backgroundColor: 'white', borderBottom: '1px solid #dadce0', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <img src="https://mits.etlab.app/images/logo.png" alt="MITS Logo" style={{ height: '36px', objectFit: 'contain' }} />
-          <h1 style={{ color: '#e31837', fontSize: '1.2rem', fontWeight: 800, margin: 0, lineHeight: '1' }}>Admin</h1>
+          <h1 style={{ color: '#e31837', fontSize: '1.2rem', fontWeight: 800, margin: 0, lineHeight: '1' }}>Admin Panel</h1>
         </div>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} style={{ background: 'none', border: 'none', color: '#3c4043', padding: '8px', cursor: 'pointer' }}>
           <span className="material-symbols-outlined" style={{ fontSize: '28px' }}>{isMobileMenuOpen ? 'close' : 'menu'}</span>
@@ -176,12 +176,12 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
           <div 
             className="admin-sidebar-menu-item"
             onClick={onGoHome}
-            style={{ color: '#1a73e8' }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e8f0fe'}
+            style={{ color: '#3c4043' }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f1f3f4'}
             onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#1a73e8' }}>arrow_back</span>
-            <span style={{ fontSize: '14px', fontWeight: '500' }}>Back to Main App</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '24px', color: '#5f6368' }}>arrow_back</span>
+            <span style={{ fontSize: '14px' }}>Back to Main App</span>
           </div>
           
           <div 

@@ -35,14 +35,6 @@ export default function App() {
 
   return (
     <div className="app-container">
-      {/* Hidden Admin Backdoor */}
-      <div 
-        onClick={() => setActiveTab('admin')}
-        style={{ position: 'absolute', top: '15px', right: '15px', zIndex: 1000, cursor: 'pointer', padding: '10px' }}
-      >
-        <span className="material-symbols-outlined" style={{ fontSize: '20px', color: '#dadce0' }}>lock</span>
-      </div>
-
       <div className="content-area" style={{ paddingBottom: (activeTab === 'navigate' || activeTab === 'scanner') ? '0' : '70px' }}>
         {activeTab === 'home' && <Home setActiveTab={setActiveTab} currentLocation={currentLocation} handleNavigation={handleNavigation} />}
         {activeTab === 'navigate' && <Navigate setActiveTab={setActiveTab} currentLocation={currentLocation} destination={destination} setDestination={setDestination} />}

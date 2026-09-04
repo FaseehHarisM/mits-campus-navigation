@@ -91,6 +91,17 @@ export default function Home({ setActiveTab, currentLocation, handleNavigation }
         <p style={{ color: 'var(--text-secondary)' }}>No events scheduled for today.</p>
       )}
 
+      {/* Professional Admin Link */}
+      <div style={{ marginTop: '64px', textAlign: 'center', borderTop: '1px solid #dadce0', paddingTop: '24px' }}>
+        <button 
+          onClick={() => setActiveTab('admin')} 
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
+          Staff / Admin Login
+        </button>
+      </div>
+
     </div>
   );
 }
