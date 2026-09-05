@@ -63,7 +63,12 @@ export default function AdminLogin({ onLogin, setAdminTab }) {
         </form>
       </div>
       <div style={{ textAlign: 'center', marginTop: '24px' }}>
-        <button onClick={() => setAdminTab('home')} style={{ background: 'transparent', color: '#5f6368', border: 'none', fontSize: '14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', fontWeight: '500', fontFamily: "'Poppins', sans-serif" }}>
+        <button 
+          onClick={() => setAdminTab('home')} 
+          onMouseEnter={(e) => e.currentTarget.style.color = '#e31837'}
+          onMouseLeave={(e) => e.currentTarget.style.color = '#5f6368'}
+          style={{ background: 'transparent', color: '#5f6368', border: 'none', fontSize: '14px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '8px', fontWeight: '500', fontFamily: "'Poppins', sans-serif", transition: 'color 0.2s' }}
+        >
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
           Return to Home Page
         </button>
