@@ -132,7 +132,7 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
       {/* Mobile Top Header (Only visible on mobile) */}
       <div className="admin-mobile-header" style={{ display: 'none', padding: '16px 24px', backgroundColor: 'white', borderBottom: '1px solid #dadce0', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src="https://mits.etlab.app/images/logo.png" alt="MITS Logo" style={{ height: '36px', objectFit: 'contain' }} />
+          <img src="/logo.png" alt="MITS Logo" style={{ height: '36px', objectFit: 'contain' }} />
           <h1 style={{ color: '#e31837', fontSize: '1.2rem', fontWeight: 800, margin: 0, lineHeight: '1' }}>Admin Panel</h1>
         </div>
         <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} style={{ background: 'none', border: 'none', color: '#3c4043', padding: '8px', cursor: 'pointer' }}>
@@ -143,7 +143,7 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
       {/* Sidebar - Google Material Style */}
       <div className={`admin-sidebar ${isMobileMenuOpen ? 'open' : ''}`}>
         <div className="admin-sidebar-header" style={{ padding: '24px', borderBottom: '1px solid #dadce0', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src="https://mits.etlab.app/images/logo.png" alt="MITS Logo" style={{ height: '48px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+          <img src="/logo.png" alt="MITS Logo" style={{ height: '48px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
           <h1 style={{ color: '#e31837', fontSize: '1.3rem', fontWeight: 800, margin: 0, lineHeight: '1.2' }}>Admin Panel</h1>
         </div>
         

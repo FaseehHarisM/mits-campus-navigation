@@ -161,6 +161,7 @@ function IsometricFloorPlan({ activeFloor }) {
                 anchorX="center"
                 anchorY="middle"
                 fontWeight={800}
+                font="/poppins-700.ttf"
              >
                 {floor === '0' ? 'Ground Floor' : floor === '1' ? 'First Floor' : 'G Floor (Basement)'}
              </Text>
@@ -359,6 +360,7 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
   const [compassOffset, setCompassOffset] = useState(null);
   const [activeFloor, setActiveFloor] = useState('0');
   const [isAccessible, setIsAccessible] = useState(false);
+  const [isWrongWay, setIsWrongWay] = useState(false);
   const controlsRef = React.useRef();
 
   React.useEffect(() => {
@@ -387,7 +389,7 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
     if (!activeRoute || activeRoute.points.length < 2) return;
     
     const STEP_LENGTH = 2.0; 
-    let distanceToTravel = steps * STEP_LENGTH;
+    let distanceToTravel = Math.max(0, steps * STEP_LENGTH);
     const points = activeRoute.points;
     const pathNodes = activeRoute.pathNodes;
     
@@ -476,10 +478,26 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
 
     if (diff <= 60) {
       setSteps(prev => prev + 1);
-    } else if (diff >= 120) {
-      setSteps(prev => Math.max(0, prev - 1));
+    } else {
+      setSteps(prev => prev - 1);
     }
   }, [rawStepEvent]);
+
+  React.useEffect(() => {
+    if (!isTracking) {
+      setIsWrongWay(false);
+      return;
+    }
+    if (compassOffset === null) return;
+
+    let normalizedHeading = (heading + compassOffset) % 360;
+    if (normalizedHeading < 0) normalizedHeading += 360;
+
+    let diff = Math.abs(normalizedHeading - currentPathAngle);
+    if (diff > 180) diff = 360 - diff;
+
+    setIsWrongWay(diff > 60);
+  }, [heading, compassOffset, currentPathAngle, isTracking]);
 
   const calculateRoute = React.useCallback(() => {
     if (!currentLocation || !destination || nodesData.length === 0) return;
@@ -634,6 +652,13 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
          <button onClick={() => setActiveFloor('0')} style={{ padding: '12px', background: activeFloor === '0' ? '#1a73e8' : 'white', color: activeFloor === '0' ? 'white' : '#5f6368', border: 'none', borderRadius: '50%', boxShadow: '0 2px 6px rgba(0,0,0,0.2)', cursor: 'pointer', fontWeight: 'bold' }}>F0</button>
          <button onClick={() => setActiveFloor('-1')} style={{ padding: '12px', background: activeFloor === '-1' ? '#1a73e8' : 'white', color: activeFloor === '-1' ? 'white' : '#5f6368', border: 'none', borderRadius: '50%', boxShadow: '0 2px 6px rgba(0,0,0,0.2)', cursor: 'pointer', fontWeight: 'bold' }}>G</button>
       </div>
+      
+      {isWrongWay && isTracking && (
+        <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', background: '#EA4335', color: 'white', padding: '12px 24px', borderRadius: '24px', zIndex: 1000, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(234, 67, 53, 0.4)' }}>
+          <span className="material-symbols-outlined">warning</span>
+          Wrong Direction!
+        </div>
+      )}
       
       {isTracking && (
         <div style={{ position: 'absolute', bottom: '110px', left: '50%', transform: 'translateX(-50%)', background: 'white', color: '#3c4043', padding: '16px 24px', borderRadius: '16px', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', width: '220px', textAlign: 'center' }}>

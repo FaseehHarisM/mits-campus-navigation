@@ -21,7 +21,7 @@ export default function AdminLogin({ onLogin, setAdminTab }) {
     <div style={{ padding: '20px', fontFamily: "'Poppins', sans-serif", maxWidth: '400px', margin: '0 auto', marginTop: '100px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <img src="https://mits.etlab.app/images/logo.png" alt="MITS Logo" style={{ height: '48px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+          <img src="/logo.png" alt="MITS Logo" style={{ height: '48px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
           <h1 style={{ color: '#e31837', fontSize: '1.4rem', fontWeight: 800, margin: 0, lineHeight: '1.2' }}>Admin Panel</h1>
         </div>
         <button onClick={() => setAdminTab('home')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '8px', display: 'flex' }}>

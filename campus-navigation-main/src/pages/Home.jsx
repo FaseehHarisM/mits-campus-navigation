@@ -31,7 +31,7 @@ export default function Home({ setActiveTab, currentLocation, handleNavigation }
       
       <header style={{ marginBottom: '32px' }}>
         <h1 style={{ color: 'var(--mits-red)', fontSize: '1.6rem', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 800, lineHeight: '1.2' }}>
-          <img src="https://mits.etlab.app/images/logo.png" alt="MITS Logo" style={{ height: '56px', objectFit: 'contain', mixBlendMode: 'multiply', imageRendering: 'high-quality' }} />
+          <img src="/logo.png" alt="MITS Logo" style={{ height: '56px', objectFit: 'contain', mixBlendMode: 'multiply', imageRendering: 'high-quality' }} />
           Campus Navigation
         </h1>
         {currentLocation ? (
