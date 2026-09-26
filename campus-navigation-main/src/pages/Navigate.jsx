@@ -4,6 +4,9 @@ import { OrbitControls, Html, Text } from '@react-three/drei';
 import * as THREE from 'three';
 import { getNodes, getEdges } from '../services/api';
 import usePDR from '../hooks/usePDR';
+import { RealBuildingModel } from '../components/RealBuildingModel';
+import { ModelErrorBoundary } from '../components/ModelErrorBoundary';
+import { CAMPUS_BUILDINGS } from '../config/buildings';
 
 const SVG_W = 1920;
 const SVG_H = 1080;
@@ -192,6 +195,9 @@ function DepartmentLabels({ nodesData, activeFloor }) {
         else if (n.Type === 'Library') { icon = "local_library"; color = "#34A853"; }
         else if (n.Type === 'Office') { icon = "work"; color = "#8E24AA"; }
         else if (n.Type === 'Hall') { icon = "stadium"; color = "#FABC04"; }
+        else if (n.Type === 'Classroom') { icon = "school"; color = "#0F9D58"; }
+        else if (n.Type === 'Lab') { icon = "science"; color = "#DB4437"; }
+        else if (n.Type === 'Server') { icon = "dns"; color = "#3F51B5"; }
 
         return (
           <Html key={idx} position={pos} center zIndexRange={[0, 0]} style={{ pointerEvents: 'none' }}>
@@ -358,6 +364,7 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
   const [livePosition, setLivePosition] = useState(null);
   const [currentPathAngle, setCurrentPathAngle] = useState(0);
   const [compassOffset, setCompassOffset] = useState(null);
+  const [activeBuilding, setActiveBuilding] = useState('ramanujan');
   const [activeFloor, setActiveFloor] = useState('0');
   const [isAccessible, setIsAccessible] = useState(false);
   const [isWrongWay, setIsWrongWay] = useState(false);
@@ -648,9 +655,41 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
 
       {/* Floor Switcher */}
       <div style={{ position: 'absolute', right: '20px', top: isTracking ? '80px' : '350px', display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 999 }}>
-         <button onClick={() => setActiveFloor('1')} style={{ padding: '12px', background: activeFloor === '1' ? '#1a73e8' : 'white', color: activeFloor === '1' ? 'white' : '#5f6368', border: 'none', borderRadius: '50%', boxShadow: '0 2px 6px rgba(0,0,0,0.2)', cursor: 'pointer', fontWeight: 'bold' }}>F1</button>
-         <button onClick={() => setActiveFloor('0')} style={{ padding: '12px', background: activeFloor === '0' ? '#1a73e8' : 'white', color: activeFloor === '0' ? 'white' : '#5f6368', border: 'none', borderRadius: '50%', boxShadow: '0 2px 6px rgba(0,0,0,0.2)', cursor: 'pointer', fontWeight: 'bold' }}>F0</button>
-         <button onClick={() => setActiveFloor('-1')} style={{ padding: '12px', background: activeFloor === '-1' ? '#1a73e8' : 'white', color: activeFloor === '-1' ? 'white' : '#5f6368', border: 'none', borderRadius: '50%', boxShadow: '0 2px 6px rgba(0,0,0,0.2)', cursor: 'pointer', fontWeight: 'bold' }}>G</button>
+        <select 
+          value={activeBuilding} 
+          onChange={(e) => {
+            setActiveBuilding(e.target.value);
+            setActiveFloor('0'); // Reset to default when switching
+          }}
+          style={{ padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontWeight: 'bold', marginBottom: '8px', background: 'white', color: '#5f6368', cursor: 'pointer' }}
+        >
+          {Object.values(CAMPUS_BUILDINGS).map(b => (
+            <option key={b.id} value={b.id}>{b.name}</option>
+          ))}
+        </select>
+        {CAMPUS_BUILDINGS[activeBuilding].floors.map(f => (
+          <button 
+            key={f.id}
+            onClick={() => setActiveFloor(f.id)} 
+            style={{ 
+              padding: '12px', 
+              background: activeFloor === f.id ? '#1a73e8' : 'white', 
+              color: activeFloor === f.id ? 'white' : '#5f6368', 
+              border: 'none', 
+              borderRadius: '50%', 
+              boxShadow: '0 2px 6px rgba(0,0,0,0.2)', 
+              cursor: 'pointer', 
+              fontWeight: 'bold',
+              width: '45px',
+              height: '45px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            {f.label}
+          </button>
+        ))}
       </div>
       
       {isWrongWay && isTracking && (
@@ -684,18 +723,20 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
       )}
       
       <div style={{ width: '100%', height: '100%' }}>
-        <Canvas camera={{ position: [0, 2000, 2000], fov: 35, near: 1, far: 10000 }} shadows>
-          <fog attach="fog" args={['#E8EAED', 1500, 6000]} />
-          <ambientLight intensity={0.9} />
-          <directionalLight position={[1000, 3000, 1000]} intensity={1.5} color="#fffcf5" castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
-          
-          <React.Suspense fallback={null}>
-            <IsometricFloorPlan activeFloor={activeFloor} />
-            <DepartmentLabels nodesData={nodesData} activeFloor={activeFloor} />
+          <Canvas camera={{ position: [0, 2000, 2000], fov: 35, near: 1, far: 50000 }} shadows>
+            <fog attach="fog" args={['#E8EAED', 2000, 30000]} />
+            <ambientLight intensity={0.9} />
+            <directionalLight position={[1000, 3000, 1000]} intensity={1.5} color="#fffcf5" castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+            
+            <React.Suspense fallback={null}>
+              <ModelErrorBoundary>
+                <RealBuildingModel activeBuilding={activeBuilding} activeFloor={activeFloor} />
+              </ModelErrorBoundary>
+              <DepartmentLabels nodesData={nodesData} activeFloor={activeFloor} />
             <NavigationRoute activeRoute={activeRoute} livePosition={livePosition} displayHeading={compassOffset !== null ? (heading + compassOffset) : currentPathAngle} activeFloor={activeFloor} />
             <CameraController isTracking={isTracking} livePosition={livePosition} controlsRef={controlsRef} displayHeading={compassOffset !== null ? (heading + compassOffset) : currentPathAngle} activeFloor={activeFloor} />
           </React.Suspense>
-          <OrbitControls ref={controlsRef} makeDefault maxPolarAngle={Math.PI / 2.2} minDistance={100} maxDistance={6000} enableDamping dampingFactor={0.05} />
+          <OrbitControls ref={controlsRef} makeDefault maxPolarAngle={Math.PI / 2.2} minDistance={100} maxDistance={30000} enableDamping dampingFactor={0.05} />
         </Canvas>
       </div>
     </div>
