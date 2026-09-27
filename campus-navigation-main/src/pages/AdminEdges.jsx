@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import DeleteModal from '../components/DeleteModal';
 import axios from 'axios';
 
 export default function AdminEdges() {
   const [edgeList, setEdgeList] = useState([]);
+  const [deleteModalId, setDeleteModalId] = useState(null);
   const [formData, setFormData] = useState({ EdgeID: '', StartNodeID: '', EndNodeID: '', Distance: '', EdgeType: 'walkway' });
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +24,7 @@ export default function AdminEdges() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Delete this Edge?')) {
+    if (true || window.confirm('Delete this Edge?')) {
       await axios.delete(`/api/edges/${id}`);
       fetchEdges();
     }
@@ -70,13 +72,21 @@ export default function AdminEdges() {
                 <td style={tdStyle}>{edge.StartNodeID} → {edge.EndNodeID}</td>
                 <td style={tdStyle}>{edge.Distance}</td>
                 <td style={tdStyle}>{edge.EdgeType}</td>
-                <td style={tdStyle}><button onClick={() => handleDelete(edge._id)} style={deleteBtnStyle}>Delete</button></td>
+                <td style={tdStyle}><button onClick={() => setDeleteModalId(edge._id)} style={deleteBtnStyle}>Delete</button></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+      <DeleteModal 
+        isOpen={!!deleteModalId} 
+        onCancel={() => setDeleteModalId(null)}
+        onConfirm={() => {
+          handleDelete(deleteModalId);
+          setDeleteModalId(null);
+        }}
+      />
+</div>
   );
 }
 

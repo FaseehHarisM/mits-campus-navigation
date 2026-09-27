@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+﻿import React, { useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Html, Text } from '@react-three/drei';
 import * as THREE from 'three';
@@ -203,7 +203,7 @@ function DepartmentLabels({ nodesData, activeFloor }) {
           <Html key={idx} position={pos} center zIndexRange={[0, 0]} style={{ pointerEvents: 'none' }}>
             <div style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-              transform: 'translateY(-50%)',
+              
               animation: 'fadeIn 0.5s ease-out'
             }}>
               <div style={{
@@ -368,7 +368,18 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
   const [activeFloor, setActiveFloor] = useState('0');
   const [isAccessible, setIsAccessible] = useState(false);
   const [isWrongWay, setIsWrongWay] = useState(false);
+  const [toastMsg, setToastMsg] = useState(null);
   const controlsRef = React.useRef();
+
+  React.useEffect(() => {
+    const handleCoordCopied = (e) => {
+      const { dbX, dbY } = e.detail;
+      setToastMsg(`Copied! X: ${dbX}, Y: ${dbY}`);
+      setTimeout(() => setToastMsg(null), 3000);
+    };
+    window.addEventListener('admin-coord-copied', handleCoordCopied);
+    return () => window.removeEventListener('admin-coord-copied', handleCoordCopied);
+  }, []);
 
   React.useEffect(() => {
     const fetchGraph = async () => {
@@ -698,6 +709,13 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
           Wrong Direction!
         </div>
       )}
+
+      {toastMsg && (
+        <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', background: '#3c4043', color: 'white', padding: '12px 24px', borderRadius: '24px', zIndex: 1000, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)', animation: 'fadeIn 0.3s ease-out' }}>
+          <span className="material-symbols-outlined">content_copy</span>
+          {toastMsg}
+        </div>
+      )}
       
       {isTracking && (
         <div style={{ position: 'absolute', bottom: '110px', left: '50%', transform: 'translateX(-50%)', background: 'white', color: '#3c4043', padding: '16px 24px', borderRadius: '16px', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', width: '220px', textAlign: 'center' }}>
@@ -742,3 +760,4 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
     </div>
   );
 }
+

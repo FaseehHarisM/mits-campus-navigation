@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import DeleteModal from '../components/DeleteModal';
 import axios from 'axios';
 
 export default function AdminFaculty() {
   const [facultyList, setFacultyList] = useState([]);
+  const [deleteModalId, setDeleteModalId] = useState(null);
   const [formData, setFormData] = useState({ Name: '', Department: '', RoomNodeID: '', Designation: '' });
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +35,7 @@ export default function AdminFaculty() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this faculty member?')) {
+    if (true || window.confirm('Are you sure you want to delete this faculty member?')) {
       try {
         await axios.delete(`/api/faculty/${id}`);
         fetchFaculty();
@@ -86,7 +88,7 @@ export default function AdminFaculty() {
                   <td style={tdStyle}>{faculty.Designation}</td>
                   <td style={tdStyle}><span style={{ backgroundColor: '#e8f0fe', color: '#1a73e8', padding: '4px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>{faculty.RoomNodeID}</span></td>
                   <td style={tdStyle}>
-                    <button onClick={() => handleDelete(faculty._id)} style={deleteBtnStyle}>
+                    <button onClick={() => setDeleteModalId(faculty._id)} style={deleteBtnStyle}>
                       <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span> Delete
                     </button>
                   </td>
@@ -96,7 +98,15 @@ export default function AdminFaculty() {
           </tbody>
         </table>
       </div>
-    </div>
+      <DeleteModal 
+        isOpen={!!deleteModalId} 
+        onCancel={() => setDeleteModalId(null)}
+        onConfirm={() => {
+          handleDelete(deleteModalId);
+          setDeleteModalId(null);
+        }}
+      />
+</div>
   );
 }
 

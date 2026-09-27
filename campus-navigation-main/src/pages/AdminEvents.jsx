@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import DeleteModal from '../components/DeleteModal';
 import axios from 'axios';
 
 export default function AdminEvents() {
   const [eventList, setEventList] = useState([]);
+  const [deleteModalId, setDeleteModalId] = useState(null);
   const [formData, setFormData] = useState({ Title: '', VenueNodeID: '', StartTime: '', EndTime: '' });
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +35,7 @@ export default function AdminEvents() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
+    if (true || window.confirm('Are you sure you want to delete this event?')) {
       try {
         await axios.delete(`/api/events/${id}`);
         fetchEvents();
@@ -96,7 +98,7 @@ export default function AdminEvents() {
                   </td>
                   <td style={tdStyle}><span style={{ backgroundColor: '#e6f4ea', color: '#1e8e3e', padding: '4px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>{event.VenueNodeID}</span></td>
                   <td style={tdStyle}>
-                    <button onClick={() => handleDelete(event._id)} style={deleteBtnStyle}>
+                    <button onClick={() => setDeleteModalId(event._id)} style={deleteBtnStyle}>
                       <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>delete</span> Delete
                     </button>
                   </td>
@@ -106,7 +108,15 @@ export default function AdminEvents() {
           </tbody>
         </table>
       </div>
-    </div>
+      <DeleteModal 
+        isOpen={!!deleteModalId} 
+        onCancel={() => setDeleteModalId(null)}
+        onConfirm={() => {
+          handleDelete(deleteModalId);
+          setDeleteModalId(null);
+        }}
+      />
+</div>
   );
 }
 

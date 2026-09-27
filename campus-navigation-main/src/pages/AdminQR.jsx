@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import DeleteModal from '../components/DeleteModal';
 import axios from 'axios';
 
 export default function AdminQR() {
   const [qrList, setQrList] = useState([]);
+  const [deleteModalId, setDeleteModalId] = useState(null);
   const [formData, setFormData] = useState({ QRID: '', NodeID: '' });
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +24,7 @@ export default function AdminQR() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Delete this QR Mapping?')) {
+    if (true || window.confirm('Delete this QR Mapping?')) {
       await axios.delete(`/api/qr/${id}`);
       fetchQRs();
     }
@@ -58,13 +60,21 @@ export default function AdminQR() {
               <tr key={qr._id} style={{ borderBottom: '1px solid #f1f3f4' }}>
                 <td style={tdStyle}><strong>{qr.QRID}</strong></td>
                 <td style={tdStyle}><span style={{ backgroundColor: '#e6f4ea', color: '#1e8e3e', padding: '4px 8px', borderRadius: '12px', fontSize: '12px', fontWeight: 'bold' }}>{qr.NodeID}</span></td>
-                <td style={tdStyle}><button onClick={() => handleDelete(qr._id)} style={deleteBtnStyle}>Delete</button></td>
+                <td style={tdStyle}><button onClick={() => setDeleteModalId(qr._id)} style={deleteBtnStyle}>Delete</button></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+      <DeleteModal 
+        isOpen={!!deleteModalId} 
+        onCancel={() => setDeleteModalId(null)}
+        onConfirm={() => {
+          handleDelete(deleteModalId);
+          setDeleteModalId(null);
+        }}
+      />
+</div>
   );
 }
 

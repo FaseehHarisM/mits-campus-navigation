@@ -1,8 +1,10 @@
 ﻿import React, { useState, useEffect } from 'react';
+import DeleteModal from '../components/DeleteModal';
 import axios from 'axios';
 
 export default function AdminFloors() {
   const [floorList, setFloorList] = useState([]);
+  const [deleteModalId, setDeleteModalId] = useState(null);
   const [formData, setFormData] = useState({ FloorID: '', Name: '', BuildingID: 'ramanujan' });
   const [loading, setLoading] = useState(true);
   const fileInputRef = React.useRef(null);
@@ -51,7 +53,7 @@ export default function AdminFloors() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Delete this Floor?')) {
+    if (true || window.confirm('Delete this Floor?')) {
       await axios.delete(`/api/floors/${id}`);
       fetchFloors();
     }
@@ -103,13 +105,21 @@ export default function AdminFloors() {
                 <td style={tdStyle}>{floor.Name}</td>
                 <td style={tdStyle}>{floor.BuildingID || 'ramanujan'}</td>
                 <td style={tdStyle}>{floor.MapSVG}</td>
-                <td style={tdStyle}><button onClick={() => handleDelete(floor._id)} style={deleteBtnStyle}>Delete</button></td>
+                <td style={tdStyle}><button onClick={() => setDeleteModalId(floor._id)} style={deleteBtnStyle}>Delete</button></td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-    </div>
+      <DeleteModal 
+        isOpen={!!deleteModalId} 
+        onCancel={() => setDeleteModalId(null)}
+        onConfirm={() => {
+          handleDelete(deleteModalId);
+          setDeleteModalId(null);
+        }}
+      />
+</div>
   );
 }
 

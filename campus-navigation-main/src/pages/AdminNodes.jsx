@@ -1,4 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
+import DeleteModal from '../components/DeleteModal';
 import axios from 'axios';
 
 // Icon matching logic matching Navigate.jsx
@@ -22,6 +23,7 @@ const getIconData = (type) => {
 
 export default function AdminNodes() {
   const [nodeList, setNodeList] = useState([]);
+  const [deleteModalId, setDeleteModalId] = useState(null);
   const [formData, setFormData] = useState({ NodeID: '', Name: '', Type: 'Room', Floor: '0', X: '', Y: '' });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -76,7 +78,7 @@ export default function AdminNodes() {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm('Delete this Node?')) {
+    if (true || window.confirm('Delete this Node?')) {
       try {
         await axios.delete(`/api/nodes/${id}`);
         fetchNodes();
@@ -163,7 +165,7 @@ export default function AdminNodes() {
                   <td style={tdStyle}>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button onClick={() => handleEdit(node)} style={editBtnStyle}>Edit</button>
-                      <button onClick={() => handleDelete(node._id)} style={deleteBtnStyle}>Delete</button>
+                      <button onClick={() => setDeleteModalId(node._id)} style={deleteBtnStyle}>Delete</button>
                     </div>
                   </td>
                 </tr>
@@ -172,7 +174,15 @@ export default function AdminNodes() {
           </tbody>
         </table>
       </div>
-    </div>
+      <DeleteModal 
+        isOpen={!!deleteModalId} 
+        onCancel={() => setDeleteModalId(null)}
+        onConfirm={() => {
+          handleDelete(deleteModalId);
+          setDeleteModalId(null);
+        }}
+      />
+</div>
   );
 }
 
