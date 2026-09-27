@@ -27,6 +27,7 @@ export default function AdminNodes() {
   const [formData, setFormData] = useState({ NodeID: '', Name: '', Type: 'Room', Floor: '0', X: '', Y: '' });
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchNodes();
@@ -77,6 +78,12 @@ export default function AdminNodes() {
     setFormData({ NodeID: '', Name: '', Type: 'Room', Floor: '0', X: '', Y: '' });
   };
 
+  const filteredList = nodeList.filter(item => 
+    (item.Name && item.Name.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (item.NodeID && item.NodeID.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (item.Type && item.Type.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
   const handleDelete = async (id) => {
     if (true || window.confirm('Delete this Node?')) {
       try {
@@ -126,7 +133,18 @@ export default function AdminNodes() {
       </div>
 
       <div style={{ background: 'white', borderRadius: '16px', border: '1px solid #dadce0', overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div style={{ padding: '16px 20px', borderBottom: '1px solid #dadce0', backgroundColor: '#f8f9fa', display: 'flex', alignItems: 'center' }}>
+            <span className="material-symbols-outlined" style={{ color: '#5f6368', marginRight: '8px' }}>search</span>
+            <input 
+              type="text" 
+              placeholder="Search nodes by Name, ID, or Type..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: '15px', width: '100%', color: '#3c4043' }}
+            />
+          </div>
+          <div style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
           <thead>
             <tr style={{ backgroundColor: '#f8f9fa', borderBottom: '1px solid #dadce0' }}>
               <th style={thStyle}>ID</th>
@@ -140,7 +158,7 @@ export default function AdminNodes() {
           <tbody>
             {loading ? (
               <tr><td colSpan="6" style={{ padding: '24px', textAlign: 'center' }}>Loading...</td></tr>
-            ) : nodeList.map(node => {
+            ) : filteredList.map(node => {
               const { icon, color } = getIconData(node.Type);
               return (
                 <tr key={node._id} style={{ borderBottom: '1px solid #f1f3f4', backgroundColor: editingId === node._id ? '#fef7f7' : 'transparent' }}>
@@ -173,8 +191,9 @@ export default function AdminNodes() {
             })}
           </tbody>
         </table>
-      </div>
-      <DeleteModal 
+          </div>
+        </div>
+        <DeleteModal 
         isOpen={!!deleteModalId} 
         onCancel={() => setDeleteModalId(null)}
         onConfirm={() => {
@@ -192,3 +211,4 @@ const thStyle = { padding: '16px 20px', color: '#5f6368', fontWeight: '600', fon
 const tdStyle = { padding: '16px 20px', color: '#3c4043', fontSize: '14px', whiteSpace: 'nowrap' };
 const editBtnStyle = { backgroundColor: 'transparent', color: '#1a73e8', border: '1px solid #1a73e8', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' };
 const deleteBtnStyle = { backgroundColor: 'transparent', color: '#d93025', border: '1px solid #d93025', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' };
+
