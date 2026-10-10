@@ -1,6 +1,6 @@
 ﻿<div align="center">
   
-# 🗺️ MITS Campus Navigation System
+# MITS Campus Navigation System
 
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Three.js](https://img.shields.io/badge/Three.js-black?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
@@ -10,29 +10,29 @@
 
 **An enterprise-grade, full-stack 3D geospatial navigation platform engineered for the Muthoot Institute of Technology and Science (MITS).**
 
-[Features](#-key-features) • [Architecture](#-system-architecture) • [Installation](#-getting-started) • [Tech Stack](#-technology-stack)
+[Features](#key-features) • [Architecture](#system-architecture) • [Installation](#getting-started) • [Tech Stack](#technology-stack)
 
 </div>
 
 ---
 
-## 🚀 Overview
+## Overview
 This application delivers real-time, interactive indoor and outdoor routing, solving complex spatial navigation challenges. By combining highly optimized graph algorithms (Dijkstra) with WebGL-based 3D rendering, it provides an intuitive, step-by-step navigation experience across multi-story campus infrastructure.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-* 🏛️ **Interactive 3D Geospatial Engine**: Leverages `react-three-fiber` and `Three.js` to render highly performant, rotatable isometric 3D models of multi-story infrastructure.
-* 🧠 **Algorithmic Pathfinding**: Implements a highly optimized Dijkstra's Shortest Path algorithm across a custom node-edge graph architecture to deliver instantaneous route calculations.
-* ♿ **Dynamic Accessibility Routing**: Features context-aware routing parameters that dynamically recalculate traversal graphs to avoid stairs and prioritize elevators for wheelchair accessibility.
-* ↕️ **Multi-Layer Floor Traversal**: Programmatically handles vertical graph traversal, seamlessly animating user paths across varying Z-axis elevations (e.g., Basement to First Floor).
-* 📷 **Location Intelligence (QR)**: Integrates device camera APIs with deterministic QR parsing to establish exact user coordinates in physical space, verifying location at staircases and lifts.
-* 🔐 **Secure Content Management System (CMS)**: Includes a role-based Admin Dashboard protected by stateless JWT authentication and bcrypt password hashing for managing spatial graph data (Nodes, Edges, Facilities) in real-time.
+* **Interactive 3D Geospatial Engine**: Leverages `react-three-fiber` and `Three.js` to render highly performant, rotatable isometric 3D models of multi-story infrastructure.
+* **Algorithmic Pathfinding**: Implements a highly optimized Dijkstra's Shortest Path algorithm across a custom node-edge graph architecture to deliver instantaneous route calculations.
+* **Dynamic Accessibility Routing**: Features context-aware routing parameters that dynamically recalculate traversal graphs to avoid stairs and prioritize elevators for wheelchair accessibility.
+* **Multi-Layer Floor Traversal**: Programmatically handles vertical graph traversal, seamlessly animating user paths across varying Z-axis elevations (e.g., Basement to First Floor).
+* **Location Intelligence (QR)**: Integrates device camera APIs with deterministic QR parsing to establish exact user coordinates in physical space, verifying location at staircases and lifts.
+* **Secure Content Management System (CMS)**: Includes a role-based Admin Dashboard protected by stateless JWT authentication and bcrypt password hashing for managing spatial graph data (Nodes, Edges, Facilities) in real-time.
 
 ---
 
-## 💻 Technology Stack
+## Technology Stack
 
 ### Client-Side Architecture
 * **Framework:** React.js powered by Vite
@@ -51,7 +51,7 @@ This application delivers real-time, interactive indoor and outdoor routing, sol
 
 ---
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 * Node.js (v16.0.0 or higher)
@@ -94,11 +94,11 @@ Run the provided bootstrap script from the root directory to initiate both the f
 ./start.bat
 ```
 
-Navigate to `http://localhost:5173` in your browser to view the application!
+Navigate to `http://localhost:5173` in your browser to view the application.
 
 ---
 
-## 🔬 Engineering Showcase
+## Engineering Showcase
 This platform was developed as a comprehensive demonstration of applied software engineering principles. It highlights the successful integration of complex Data Structures (Graph Theory), scalable Full-Stack Web Architecture (MERN), and performant Client-Side 3D Graphics rendering within a production-ready application environment.
 
 ---
