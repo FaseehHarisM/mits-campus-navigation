@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { getQRNode } from '../services/api';
 
-export default function QRScanner({ setActiveTab, setCurrentLocation, pendingNav, setPendingNav }) {
+export default function QRScanner({ setActiveTab, setCurrentLocation, pendingNav, setPendingNav, pendingTransition, setPendingTransition }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const [error, setError] = useState(null);
@@ -62,6 +62,26 @@ export default function QRScanner({ setActiveTab, setCurrentLocation, pendingNav
               if (node && node.Name) {
                 setScanResult(node.Name);
                 setCurrentLocation(node.Name);
+                
+                if (pendingTransition) {
+                  const actualFloorStr = String(node.Floor);
+                  const getFloorName = (f) => f === '0' ? '1st Floor' : f === '1' ? '2nd Floor' : 'Ground Floor';
+                  
+                  if (actualFloorStr === pendingTransition.destFloor) {
+                    alert(`✅ You have reached the ${getFloorName(actualFloorStr)}.
+Continuing navigation!`);
+                  } else {
+                    alert(`⚠️ Wrong Floor Detected!
+
+You are on the ${getFloorName(actualFloorStr)}, but the expected floor was the ${getFloorName(pendingTransition.destFloor)}.
+
+Your route is being recalculated.`);
+                  }
+                  setPendingTransition(null);
+                  setActiveTab('navigate');
+                  return;
+                }
+
                 
                 if (pendingNav) {
                   setPendingNav(false);

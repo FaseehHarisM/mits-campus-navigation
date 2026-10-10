@@ -4,6 +4,8 @@ import { getEvents } from '../services/api';
 export default function Home({ setActiveTab, currentLocation, handleNavigation }) {
   const [events, setEvents] = useState([]);
   const [nodes, setNodes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +28,8 @@ export default function Home({ setActiveTab, currentLocation, handleNavigation }
     return node ? node.Name : nodeId;
   };
 
+  const filteredNodes = nodes.filter(n => n.Name && n.Name.toLowerCase().includes(searchTerm.toLowerCase()));
+
   return (
     <div style={{ padding: '24px', paddingBottom: '90px', animation: 'fadeIn 0.3s ease-in-out' }}>
       
@@ -43,9 +47,50 @@ export default function Home({ setActiveTab, currentLocation, handleNavigation }
         )}
       </header>
 
-      <div className="search-bar" style={{ marginBottom: '24px', padding: '14px 20px' }} onClick={() => setActiveTab('navigate')}>
-        <span className="material-symbols-outlined">search</span>
-        <input type="text" placeholder="Search destination..." readOnly style={{ cursor: 'pointer', background: 'transparent', border: 'none', outline: 'none', width: '100%', color: 'var(--text-primary)', fontWeight: 500 }} />
+      <div style={{ position: 'relative', marginBottom: '24px' }}>
+        <div className="search-bar" style={{ padding: '14px 20px', zIndex: 10, position: 'relative' }}>
+          <span className="material-symbols-outlined">search</span>
+          <input 
+            type="text" 
+            placeholder="Search destination..." 
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setShowSuggestions(true);
+            }}
+            onFocus={() => setShowSuggestions(true)}
+            style={{ background: 'transparent', border: 'none', outline: 'none', width: '100%', color: 'var(--text-primary)', fontWeight: 500 }} 
+          />
+          {searchTerm && (
+            <span className="material-symbols-outlined" style={{ cursor: 'pointer', color: '#5f6368', fontSize: '20px' }} onClick={() => { setSearchTerm(''); setShowSuggestions(false); }}>close</span>
+          )}
+        </div>
+        
+        {showSuggestions && searchTerm && (
+          <div style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'white', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', zIndex: 100, maxHeight: '300px', overflowY: 'auto', marginTop: '8px', border: '1px solid #e0e0e0' }}>
+            {filteredNodes.length > 0 ? (
+              filteredNodes.map(node => (
+                <div 
+                  key={node.NodeID}
+                  onClick={() => {
+                    setSearchTerm('');
+                    setShowSuggestions(false);
+                    handleNavigation(node.Name);
+                  }}
+                  style={{ padding: '16px 20px', borderBottom: '1px solid #f1f3f4', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' }}
+                >
+                  <span className="material-symbols-outlined" style={{ color: '#1a73e8' }}>location_on</span>
+                  <div>
+                    <div style={{ fontWeight: 600, color: '#3c4043' }}>{node.Name}</div>
+                    <div style={{ fontSize: '12px', color: '#5f6368' }}>Floor: {node.FloorID} • {node.Type}</div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div style={{ padding: '20px', textAlign: 'center', color: '#5f6368' }}>No locations found</div>
+            )}
+          </div>
+        )}
       </div>
 
       <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
@@ -93,15 +138,17 @@ export default function Home({ setActiveTab, currentLocation, handleNavigation }
 
       {/* Professional Admin Link & Copyright */}
       <div style={{ marginTop: '64px', textAlign: 'center', borderTop: '1px solid #dadce0', paddingTop: '24px' }}>
-        <button 
-          onClick={() => setActiveTab('admin')} 
-          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--mits-red)'}
-          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-          style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', cursor: 'pointer', fontFamily: "'Poppins', sans-serif", marginBottom: '16px', transition: 'color 0.2s' }}
-        >
-          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
-          Admin Login
-        </button>
+        {window.innerWidth > 768 && (
+          <button 
+            onClick={() => setActiveTab('admin')} 
+            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--mits-red)'}
+            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', cursor: 'pointer', fontFamily: "'Poppins', sans-serif", marginBottom: '16px', transition: 'color 0.2s' }}
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
+            Admin Login
+          </button>
+        )}
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: 0 }}>
           &copy; {new Date().getFullYear()} Faseeh Haris M. All rights reserved.
         </p>

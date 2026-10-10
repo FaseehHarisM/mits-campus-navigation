@@ -184,7 +184,7 @@ function DepartmentLabels({ nodesData, activeFloor }) {
   return (
     <group>
       {visibleNodes.map((n, idx) => {
-        const pos = svgToWorld(n.X, n.Y, 30, String(n.Floor));
+        const pos = svgToWorld(n.X, n.Y, 150, String(n.Floor));
         let icon = "room";
         let color = "#4285F4";
         
@@ -200,34 +200,35 @@ function DepartmentLabels({ nodesData, activeFloor }) {
         else if (n.Type === 'Server') { icon = "dns"; color = "#3F51B5"; }
 
         return (
-          <Html key={idx} position={pos} center zIndexRange={[0, 0]} style={{ pointerEvents: 'none' }}>
-            <div style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
-              
-              animation: 'fadeIn 0.5s ease-out'
-            }}>
+            <Html key={idx} position={pos} center wrapperClass="map-label-wrapper" style={{ pointerEvents: 'none' }}>
               <div style={{
-                width: '28px', height: '28px', borderRadius: '50%',
-                background: color, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.2)', border: '2px solid white'
-              }}>
-                <span className="material-symbols-outlined filled" style={{ color: 'white', fontSize: '16px' }}>
-                  {icon}
-                </span>
-              </div>
-              
-              <div style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                padding: '4px 8px', borderRadius: '12px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.05)'
-              }}>
-                <span style={{ fontSize: '11px', fontWeight: 700, color: '#3C4043', whiteSpace: 'nowrap' }}>
-                  {n.Name}
-                </span>
-              </div>
-            </div>
-          </Html>
-        )
+                  position: 'relative', width: '28px', height: '28px',
+                }}>
+                  <div style={{
+                    width: '28px', height: '28px', borderRadius: '50%',
+                    background: color, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 8px rgba(0,0,0,0.2)', border: '2px solid white',
+                    position: 'relative', zIndex: 2
+                  }}>
+                    <span className="material-symbols-outlined filled" style={{ color: 'white', fontSize: '16px' }}>
+                      {icon}
+                      </span>
+                    </div>
+                    
+                    <div style={{
+                      position: 'absolute', top: '100%', left: '50%', transform: 'translateX(-50%)', marginTop: '4px',
+                      background: 'rgba(255, 255, 255, 0.95)',
+                      padding: '4px 8px', borderRadius: '12px',
+                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)', border: '1px solid rgba(0,0,0,0.05)',
+                      zIndex: 1
+                    }}>
+                      <span style={{ fontSize: '10px', fontWeight: 'bold', color: '#3c4043', whiteSpace: 'nowrap' }}>
+                        {n.Name}
+                      </span>
+                    </div>
+                </div>
+              </Html>
+          );
       })}
     </group>
   );
@@ -252,7 +253,7 @@ function NavigationRoute({ activeRoute, livePosition, displayHeading, activeFloo
 
     return floorPaths.map(path => {
       const curve = new THREE.CatmullRomCurve3(path, false, 'catmullrom', 0.1);
-      return new THREE.TubeGeometry(curve, 128, 10, 8, false);
+      return new THREE.TubeGeometry(curve, 128, 40, 8, false);
     });
   }, [activeRoute, activeFloor]);
 
@@ -331,34 +332,57 @@ function NavigationRoute({ activeRoute, livePosition, displayHeading, activeFloo
   );
 }
 
-function CameraController({ isTracking, livePosition, controlsRef, displayHeading, activeFloor }) {
+function CameraController({ isTracking, livePosition, controlsRef, displayHeading, activeFloor, cameraAnimation, setCameraAnimation }) {
+  // Snap camera once when floor changes so user doesn't lose the map, but don't lock it!
+  React.useEffect(() => {
+    if (controlsRef.current && !isTracking) {
+      const targetY = Y_OFFSETS[String(activeFloor)] || 0;
+      controlsRef.current.target.set(0, targetY, 0);
+      controlsRef.current.update();
+    }
+  }, [activeFloor, isTracking, controlsRef]);
+
   useFrame((state) => {
     if (controlsRef.current) {
-      const targetY = Y_OFFSETS[String(activeFloor)] || 0;
-      
       if (isTracking && livePosition && displayHeading !== undefined) {
+        const targetY = Y_OFFSETS[String(activeFloor)] || 0;
         controlsRef.current.target.lerp(new THREE.Vector3(livePosition.x, targetY, livePosition.z), 0.05);
         
         const rad = THREE.MathUtils.degToRad(displayHeading);
         const idealCameraPos = new THREE.Vector3(
-          livePosition.x - Math.cos(rad) * 450, 
-          targetY + 350, 
-          livePosition.z - Math.sin(rad) * 450
-        );
+            livePosition.x - Math.cos(rad) * 5000, 
+            targetY + 4000, 
+            livePosition.z - Math.sin(rad) * 5000
+          );
         state.camera.position.lerp(idealCameraPos, 0.05);
-      } else {
-        // Just snap focus to the active floor center
-        controlsRef.current.target.lerp(new THREE.Vector3(0, targetY, 0), 0.05);
+        controlsRef.current.update();
+      } else if (cameraAnimation) {
+        controlsRef.current.target.lerp(cameraAnimation.target, 0.05);
+        state.camera.position.lerp(cameraAnimation.position, 0.05);
+        controlsRef.current.update();
+        
+        if (controlsRef.current.target.distanceTo(cameraAnimation.target) < 20 && state.camera.position.distanceTo(cameraAnimation.position) < 20) {
+          setCameraAnimation(null);
+        }
       }
-      controlsRef.current.update();
     }
   });
   return null;
 }
 
-export default function Navigate({ setActiveTab, currentLocation, destination, setDestination }) {
+export default function Navigate({ setActiveTab, currentLocation, destination, setDestination, pendingTransition, setPendingTransition }) {
   const [activeRoute, setActiveRoute] = useState(null);
+    const [routeError, setRouteError] = useState(null);
+  const [cameraAnimation, setCameraAnimation] = useState(null);
+const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [nodesData, setNodesData] = useState([]);
+    const [fetchError, setFetchError] = useState(null);
   const [graphData, setGraphData] = useState({});
   const { steps, setSteps, rawStepEvent, heading, isTracking, startTracking, stopTracking, resetSteps } = usePDR();
   const [livePosition, setLivePosition] = useState(null);
@@ -367,6 +391,45 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
   const [activeBuilding, setActiveBuilding] = useState('ramanujan');
   const [activeFloor, setActiveFloor] = useState('0');
   const [isAccessible, setIsAccessible] = useState(false);
+    
+
+  const handleEmergency = () => {
+    if (!currentLocation) {
+      alert("Please scan your current location first!");
+      return;
+    }
+    const startNode = nodesData.find(n => n.Name === currentLocation);
+    if (!startNode) return;
+
+    // Define exits
+    const exits = nodesData.filter(n => 
+      n.Type === 'Exit' || 
+      (n.Name && (n.Name.toLowerCase().includes('exit') || n.Name.toLowerCase().includes('main door')))
+    );
+
+    if (exits.length === 0) {
+      alert("No emergency exits found in the database. Please name a node 'Exit' or 'Main Door'.");
+      return;
+    }
+
+    let nearestExit = null;
+    let minDistance = Infinity;
+
+    exits.forEach(exit => {
+      const result = runDijkstra(startNode.NodeID, exit.NodeID, nodesData, graphData, false);
+      if (result && result.totalDistance < minDistance) {
+        minDistance = result.totalDistance;
+        nearestExit = exit;
+      }
+    });
+
+    if (nearestExit) {
+      setDestination(nearestExit.NodeID);
+    } else {
+      alert("No valid route to an emergency exit found!");
+    }
+  };
+
   const [isWrongWay, setIsWrongWay] = useState(false);
   const [toastMsg, setToastMsg] = useState(null);
   const controlsRef = React.useRef();
@@ -390,14 +453,17 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
         const g = {};
         nodes.forEach(n => g[n.NodeID] = {});
         edges.forEach(e => {
-          g[e.StartNodeID][e.EndNodeID] = { distance: e.Distance, type: e.EdgeType || 'walkway' };
-          g[e.EndNodeID][e.StartNodeID] = { distance: e.Distance, type: e.EdgeType || 'walkway' };
-        });
+            if (g[e.StartNodeID] && g[e.EndNodeID]) {
+              g[e.StartNodeID][e.EndNodeID] = { distance: e.Distance, type: e.EdgeType || 'walkway' };
+              g[e.EndNodeID][e.StartNodeID] = { distance: e.Distance, type: e.EdgeType || 'walkway' };
+            }
+          });
 
         setNodesData(nodes);
         setGraphData(g);
       } catch (err) {
         console.error("Error loading graph data", err);
+          setFetchError(err.message || String(err));
       }
     };
     fetchGraph();
@@ -427,6 +493,34 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
       const n2 = pathNodes[i + 1];
 
       let segmentLogicalDist = Math.hypot(p2.x - p1.x, p2.z - p1.z); 
+      let isTransition = false;
+      let transType = '';
+
+      if (n1.Floor !== n2.Floor) {
+        if (n1.Type === 'Elevator' && n2.Type === 'Elevator') {
+          segmentLogicalDist = 0; 
+          isTransition = true;
+          transType = 'Lift';
+        } else if (n1.Type === 'Stairs' && n2.Type === 'Stairs') {
+          segmentLogicalDist = 75; 
+          isTransition = true;
+          transType = 'Staircase';
+        }
+      }
+
+      if (isTransition && distanceToTravel > 0) {
+        setPendingTransition({
+          type: transType,
+          currentFloor: String(n1.Floor),
+          destFloor: String(n2.Floor),
+          nodeName: n1.Name
+        });
+        stopTracking();
+        newPos = p1.clone();
+        distanceToTravel = 0;
+        break;
+      }
+
 
       if (n1.Floor !== n2.Floor) {
         if (n1.Type === 'Elevator' && n2.Type === 'Elevator') {
@@ -518,6 +612,7 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
   }, [heading, compassOffset, currentPathAngle, isTracking]);
 
   const calculateRoute = React.useCallback(() => {
+      setRouteError(null);
     if (!currentLocation || !destination || nodesData.length === 0) return;
 
     const safeCompare = (val1, val2) => {
@@ -556,7 +651,7 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
 
       const points = pathIDs.map(id => {
         const n = nodesData.find(node => node.NodeID === id);
-        return new THREE.Vector3(...svgToWorld(n.X, n.Y, 0, n.Floor)); 
+        return new THREE.Vector3(...svgToWorld(n.X, n.Y, 80, n.Floor)); 
       });
       const pathNodes = pathIDs.map(id => nodesData.find(node => node.NodeID === id));
 
@@ -592,11 +687,31 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
 
   const handleStartNavigation = () => {
     setCompassOffset(null);
-    if (!currentLocation || !destination) {
-      alert("Please ensure both current location and destination are set.");
-      return;
-    }
-    calculateRoute();
+    if (!activeRoute || !activeRoute.pathPoints || activeRoute.pathPoints.length === 0) return;
+    
+    const targetY = Y_OFFSETS[String(activeFloor)] || 0;
+    let minX = Infinity, maxX = -Infinity;
+    let minZ = Infinity, maxZ = -Infinity;
+    
+    activeRoute.pathPoints.forEach(p => {
+      if (p.x < minX) minX = p.x;
+      if (p.x > maxX) maxX = p.x;
+      if (p.z < minZ) minZ = p.z;
+      if (p.z > maxZ) maxZ = p.z;
+    });
+    
+    const centerX = (minX + maxX) / 2;
+    const centerZ = (minZ + maxZ) / 2;
+    
+    const routeLengthX = maxX - minX;
+    const routeLengthZ = maxZ - minZ;
+    const maxDim = Math.max(routeLengthX, routeLengthZ, 1000);
+    const zoomDistance = maxDim * 1.5; 
+
+    setCameraAnimation({
+      target: new THREE.Vector3(centerX, targetY, centerZ),
+      position: new THREE.Vector3(centerX, targetY + zoomDistance, centerZ + zoomDistance * 0.8)
+    });
   };
 
   const getDistanceDisplay = () => {
@@ -608,18 +723,29 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
 
   return (
     <div style={{ width: '100%', height: '100%', position: 'relative', background: '#E8EAED' }}>
+
+
+
+
+
+
       
       {!isTracking && (
-        <div style={{ position: 'absolute', top: '20px', left: '20px', right: '20px', background: 'white', borderRadius: '16px', padding: '16px', zIndex: 1000, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h2 style={{ fontSize: '1.2rem', margin: 0, color: '#3c4043' }}>Route Planner</h2>
-            
-            <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#1967d2', background: '#e8f0fe', padding: '4px 10px', borderRadius: '12px', cursor: 'pointer' }}>
-              <input type="checkbox" checked={isAccessible} onChange={(e) => setIsAccessible(e.target.checked)} style={{ cursor: 'pointer' }} />
-              <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>accessible</span>
-              Avoid Stairs
-            </label>
-          </div>
+        <div style={{ position: 'absolute', top: '20px', left: '20px', right: '20px', background: 'white', borderRadius: '16px', padding: '16px', zIndex: 9999999999999, boxShadow: '0 4px 12px rgba(0,0,0,0.15)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <h2 style={{ fontSize: '1.2rem', margin: 0, color: '#3c4043', fontWeight: 800 }}>Route Planner</h2>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', alignItems: 'center' }}>
+              <button onClick={handleEmergency} style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.8rem', fontWeight: 'bold', color: 'white', background: '#EA4335', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', border: 'none', boxShadow: '0 2px 4px rgba(234, 67, 53, 0.3)' }}>
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>emergency</span>
+                Emergency
+              </button>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 'bold', color: '#1967d2', background: '#e8f0fe', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', border: '1px solid #d2e3fc' }}>
+                <input type="checkbox" checked={isAccessible} onChange={(e) => setIsAccessible(e.target.checked)} style={{ cursor: 'pointer', margin: 0 }} />
+                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>accessible</span>
+                Avoid Stairs
+              </label>
+            </div>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
             <div className="search-bar" style={{ padding: '8px 16px', background: '#f1f3f4', border: 'none', borderRadius: '8px' }}>
@@ -635,7 +761,7 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
               >
                 <option value="" disabled>Choose destination...</option>
                 {nodesData.filter(n => n.Type !== 'Junction').map(node => (
-                  <option key={node.NodeID} value={node.Name}>
+                  <option key={node.NodeID} value={node.NodeID}>
                     {node.Name} {node.Floor === '0' ? '(F0)' : node.Floor === '1' ? '(F1)' : '(G)'}
                   </option>
                 ))}
@@ -654,30 +780,39 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
                    <span className="material-symbols-outlined">navigation</span> Start
                  </button>
                )}
-               {!isTracking && (
-                 <button className="btn-outline" style={{ padding: '8px 16px', fontSize: '0.9rem', borderRadius: '24px', color: '#4285F4', border: '2px solid #4285F4' }} onClick={handleStartNavigation}>
-                   <span className="material-symbols-outlined">route</span> Map
-                 </button>
-               )}
+                                {!isTracking && (
+                   <button className="btn-outline" style={{ padding: '8px 16px', fontSize: '0.9rem', borderRadius: '24px', color: '#4285F4', border: '2px solid #4285F4' }} onClick={handleStartNavigation}>
+                     <span className="material-symbols-outlined">route</span> Map
+                   </button>
+                 )}
              </div>
           </div>
         </div>
       )}
 
       {/* Floor Switcher */}
-      <div style={{ position: 'absolute', right: '20px', top: isTracking ? '80px' : '350px', display: 'flex', flexDirection: 'column', gap: '8px', zIndex: 999 }}>
-        <select 
-          value={activeBuilding} 
-          onChange={(e) => {
-            setActiveBuilding(e.target.value);
-            setActiveFloor('0'); // Reset to default when switching
-          }}
-          style={{ padding: '8px', borderRadius: '8px', border: '1px solid #ddd', fontWeight: 'bold', marginBottom: '8px', background: 'white', color: '#5f6368', cursor: 'pointer' }}
-        >
-          {Object.values(CAMPUS_BUILDINGS).map(b => (
-            <option key={b.id} value={b.id}>{b.name}</option>
-          ))}
-        </select>
+      <div style={{ position: 'absolute', right: '20px', top: isTracking ? '80px' : '350px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px', zIndex: 99999999 }}>
+        <div style={{ position: 'relative', width: '45px', height: '45px', marginBottom: '8px' }}>
+            <button style={{ 
+                width: '100%', height: '100%', background: 'white', color: '#5f6368', 
+                border: 'none', borderRadius: '50%', boxShadow: '0 2px 6px rgba(0,0,0,0.2)', 
+                display: 'flex', alignItems: 'center', justifyContent: 'center' 
+            }}>
+              <span className="material-symbols-outlined">apartment</span>
+            </button>
+            <select 
+              value={activeBuilding} 
+              onChange={(e) => {
+                setActiveBuilding(e.target.value);
+                setActiveFloor('0'); // Reset to default when switching
+              }}
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', opacity: 0, cursor: 'pointer' }}
+            >
+              {Object.values(CAMPUS_BUILDINGS).map(b => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+          </div>
         {CAMPUS_BUILDINGS[activeBuilding].floors.map(f => (
           <button 
             key={f.id}
@@ -704,21 +839,21 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
       </div>
       
       {isWrongWay && isTracking && (
-        <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', background: '#EA4335', color: 'white', padding: '12px 24px', borderRadius: '24px', zIndex: 1000, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(234, 67, 53, 0.4)' }}>
+        <div style={{ position: 'absolute', top: '80px', left: '50%', transform: 'translateX(-50%)', background: '#EA4335', color: 'white', padding: '12px 24px', borderRadius: '24px', zIndex: 9999999999999, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(234, 67, 53, 0.4)' }}>
           <span className="material-symbols-outlined">warning</span>
           Wrong Direction!
         </div>
       )}
 
       {toastMsg && (
-        <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', background: '#3c4043', color: 'white', padding: '12px 24px', borderRadius: '24px', zIndex: 1000, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)', animation: 'fadeIn 0.3s ease-out' }}>
+        <div style={{ position: 'absolute', bottom: '20px', left: '50%', transform: 'translateX(-50%)', background: '#3c4043', color: 'white', padding: '12px 24px', borderRadius: '24px', zIndex: 9999999999999, fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)', animation: 'fadeIn 0.3s ease-out' }}>
           <span className="material-symbols-outlined">content_copy</span>
           {toastMsg}
         </div>
       )}
       
       {isTracking && (
-        <div style={{ position: 'absolute', bottom: '110px', left: '50%', transform: 'translateX(-50%)', background: 'white', color: '#3c4043', padding: '16px 24px', borderRadius: '16px', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', width: '220px', textAlign: 'center' }}>
+        <div style={{ position: 'absolute', bottom: '110px', left: '50%', transform: 'translateX(-50%)', background: 'white', color: '#3c4043', padding: '16px 24px', borderRadius: '16px', zIndex: 99999999, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px', boxShadow: '0 8px 24px rgba(0,0,0,0.2)', width: '220px', textAlign: 'center' }}>
           {activeRoute && Math.ceil(activeRoute.walkingDistance / 2.0) - steps > 0 ? (
             <>
               <span className="material-symbols-outlined" style={{ color: '#34a853', fontSize: '2rem' }}>directions_walk</span>
@@ -740,11 +875,51 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
         </div>
       )}
       
-      <div style={{ width: '100%', height: '100%' }}>
-          <Canvas camera={{ position: [0, 2000, 2000], fov: 35, near: 1, far: 50000 }} shadows>
+      
+      {pendingTransition && (
+        <div style={{ position: 'absolute', top: '0', left: '0', width: '100%', height: '100%', background: 'rgba(0,0,0,0.85)', zIndex: 99999999999999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: 'white', padding: '32px', borderRadius: '24px', width: '100%', maxWidth: '400px', textAlign: 'center', boxShadow: '0 12px 48px rgba(0,0,0,0.5)' }}>
+             <div style={{ width: '64px', height: '64px', background: '#e8f0fe', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+               <span className="material-symbols-outlined" style={{ fontSize: '32px', color: '#4285F4' }}>
+                 {pendingTransition.type === 'Lift' ? 'elevator' : 'stairs'}
+               </span>
+             </div>
+             <h2 style={{ color: '#4285F4', margin: '0 0 24px 0', fontSize: '1.5rem', fontWeight: 800 }}>{pendingTransition.type.toUpperCase()} NAVIGATION</h2>
+             
+             <div style={{ textAlign: 'left', margin: '20px 0', background: '#f8f9fa', padding: '20px', borderRadius: '16px', border: '1px solid #e8eaed' }}>
+               <p style={{ margin: '0 0 12px 0', fontSize: '1.1rem', display: 'flex', justifyContent: 'space-between' }}>
+                 <strong style={{ color: '#3c4043' }}>Current Floor:</strong> 
+                 <span style={{ color: '#1a73e8', fontWeight: 600 }}>{pendingTransition.currentFloor === '0' ? '1st Floor' : pendingTransition.currentFloor === '1' ? '2nd Floor' : 'Ground Floor'}</span>
+               </p>
+               <div style={{ height: '1px', background: '#e8eaed', width: '100%', marginBottom: '12px' }}></div>
+               <p style={{ margin: 0, fontSize: '1.1rem', display: 'flex', justifyContent: 'space-between' }}>
+                 <strong style={{ color: '#3c4043' }}>Destination:</strong> 
+                 <span style={{ color: '#34a853', fontWeight: 600 }}>{pendingTransition.destFloor === '0' ? '1st Floor' : pendingTransition.destFloor === '1' ? '2nd Floor' : 'Ground Floor'}</span>
+               </p>
+             </div>
+             
+             <p style={{ fontSize: '1.2rem', fontWeight: 600, color: '#202124', lineHeight: 1.5, marginBottom: '16px' }}>
+               {pendingTransition.type === 'Lift' 
+                 ? `Enter ${pendingTransition.nodeName} and select the destination floor.`
+                 : `Take ${pendingTransition.nodeName} to the destination floor.`}
+             </p>
+             
+             <p style={{ fontSize: '1rem', color: '#5f6368', marginBottom: '32px', lineHeight: 1.5 }}>
+               After reaching the {pendingTransition.type === 'Lift' ? 'lift lobby' : 'landing'}, scan the QR code to verify your location and continue.
+             </p>
+             
+             <button onClick={() => { setActiveTab('scanner'); }} className="btn-primary" style={{ width: '100%', padding: '16px', fontSize: '1.2rem', borderRadius: '30px', background: '#4285F4', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
+               <span className="material-symbols-outlined">qr_code_scanner</span> Scan QR Code
+             </button>
+          </div>
+        </div>
+      )}
+
+        <div style={{ width: '100%', height: '100%' }}>
+          <Canvas camera={{ position: [0, 2000, 2000], fov: 35, near: 1, far: 50000 }} dpr={[1, 1]}>
             <fog attach="fog" args={['#E8EAED', 2000, 30000]} />
             <ambientLight intensity={0.9} />
-            <directionalLight position={[1000, 3000, 1000]} intensity={1.5} color="#fffcf5" castShadow shadow-mapSize-width={2048} shadow-mapSize-height={2048} />
+            <directionalLight position={[1000, 3000, 1000]} intensity={1.5} color="#fffcf5" />
             
             <React.Suspense fallback={null}>
               <ModelErrorBoundary>
@@ -752,12 +927,13 @@ export default function Navigate({ setActiveTab, currentLocation, destination, s
               </ModelErrorBoundary>
               <DepartmentLabels nodesData={nodesData} activeFloor={activeFloor} />
             <NavigationRoute activeRoute={activeRoute} livePosition={livePosition} displayHeading={compassOffset !== null ? (heading + compassOffset) : currentPathAngle} activeFloor={activeFloor} />
-            <CameraController isTracking={isTracking} livePosition={livePosition} controlsRef={controlsRef} displayHeading={compassOffset !== null ? (heading + compassOffset) : currentPathAngle} activeFloor={activeFloor} />
+            <CameraController isTracking={isTracking} livePosition={livePosition} controlsRef={controlsRef} displayHeading={compassOffset !== null ? (heading + compassOffset) : currentPathAngle} activeFloor={activeFloor} cameraAnimation={cameraAnimation} setCameraAnimation={setCameraAnimation} />
           </React.Suspense>
-          <OrbitControls ref={controlsRef} makeDefault maxPolarAngle={Math.PI / 2.2} minDistance={100} maxDistance={30000} enableDamping dampingFactor={0.05} />
+          <OrbitControls ref={controlsRef} makeDefault maxPolarAngle={Math.PI / 2.2} minDistance={100} maxDistance={isMobile ? 15000 : 30000} enableDamping dampingFactor={0.05}  />
         </Canvas>
       </div>
     </div>
   );
 }
+
 

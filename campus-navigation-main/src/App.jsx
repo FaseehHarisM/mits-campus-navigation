@@ -12,6 +12,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState('home');
   const [currentLocation, setCurrentLocation] = useState('');
   const [destination, setDestination] = useState('');
+  const [pendingTransition, setPendingTransition] = useState(null);
   const [pendingNav, setPendingNav] = useState(false);
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(!!localStorage.getItem('adminToken'));
 
@@ -37,10 +38,10 @@ export default function App() {
     <div className="app-container">
       <div className="content-area" style={{ paddingBottom: (activeTab === 'navigate' || activeTab === 'scanner') ? '0' : '70px' }}>
         {activeTab === 'home' && <Home setActiveTab={setActiveTab} currentLocation={currentLocation} handleNavigation={handleNavigation} />}
-        {activeTab === 'navigate' && <Navigate setActiveTab={setActiveTab} currentLocation={currentLocation} destination={destination} setDestination={setDestination} />}
+        {activeTab === 'navigate' && <Navigate setActiveTab={setActiveTab} currentLocation={currentLocation} destination={destination} setDestination={setDestination} pendingTransition={pendingTransition} setPendingTransition={setPendingTransition} />}
         {activeTab === 'faculty' && <Faculty setActiveTab={setActiveTab} handleNavigation={handleNavigation} />}
         {activeTab === 'events' && <Events setActiveTab={setActiveTab} handleNavigation={handleNavigation} />}
-        {activeTab === 'scanner' && <QRScanner setActiveTab={setActiveTab} setCurrentLocation={setCurrentLocation} pendingNav={pendingNav} setPendingNav={setPendingNav} />}
+        {activeTab === 'scanner' && <QRScanner setActiveTab={setActiveTab} setCurrentLocation={setCurrentLocation} pendingNav={pendingNav} setPendingNav={setPendingNav} pendingTransition={pendingTransition} setPendingTransition={setPendingTransition} />}
       </div>
       {activeTab !== 'scanner' && <BottomNav activeTab={activeTab} setActiveTab={setActiveTab} />}
     </div>

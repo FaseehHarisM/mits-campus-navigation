@@ -5,6 +5,7 @@ import AdminNodes from './AdminNodes';
 import AdminEdges from './AdminEdges';
 import AdminQR from './AdminQR';
 import AdminFloors from './AdminFloors';
+import AdminMapEditor from './AdminMapEditor';
 
 import axios from 'axios';
 
@@ -116,6 +117,7 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
 
   const menuItems = [
     { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+    { id: 'mapeditor', label: 'Visual Map Editor', icon: 'map' },
     { id: 'floors', label: 'Floors', icon: 'layers' },
     { id: 'nodes', label: 'Locations / Nodes', icon: 'share_location' },
     { id: 'edges', label: 'Navigation / Edges', icon: 'route' },
@@ -201,6 +203,7 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
       <div className="admin-content">
         <div className="admin-content-inner">
           {activePage === 'dashboard' && <Overview />}
+          {activePage === 'mapeditor' && <AdminMapEditor />}
           {activePage === 'floors' && <AdminFloors />}
           {activePage === 'nodes' && <AdminNodes />}
           {activePage === 'edges' && <AdminEdges />}
