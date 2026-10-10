@@ -137,7 +137,7 @@ Your route is being recalculated.`);
             <canvas ref={canvasRef} style={{ display: 'none' }} />
             
             {/* Scanner Overlay Guide */}
-            <div style={{ position: 'absolute', width: '250px', height: '250px', border: '4px solid #00ff88', borderRadius: '24px', boxShadow: '0 0 0 4000px rgba(0,0,0,0.5)' }}>
+            <div style={{ position: 'absolute', width: '250px', height: '250px', border: '4px solid #EA4335', borderRadius: '24px', boxShadow: '0 0 0 4000px rgba(0,0,0,0.5)' }}>
                {/* Animated scanning line could go here */}
             </div>
             <p style={{ position: 'absolute', bottom: '15%', color: 'white', background: 'rgba(0,0,0,0.7)', padding: '8px 16px', borderRadius: '16px', fontSize: '0.9rem' }}>
