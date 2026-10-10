@@ -13,7 +13,7 @@ const BottomNav = ({ activeTab, setActiveTab }) => {
       justifyContent: 'space-around',
       padding: '12px 0',
       paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
-      zIndex: 1000,
+      zIndex: 9999999999999,
     }}>
       <NavItem tabId="home" activeTab={activeTab} setActiveTab={setActiveTab} label="Home" icon="home" />
       <NavItem tabId="navigate" activeTab={activeTab} setActiveTab={setActiveTab} label="Navigate" icon="explore" />
