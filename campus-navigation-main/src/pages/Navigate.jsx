@@ -669,8 +669,13 @@ const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
              walkingDistance += 75;
           }
         } else {
-          walkingDistance += Math.hypot(p2.x - p1.x, p2.z - p1.z);
-        }
+            const isFirstSegmentRoom = (i === 0 && n1.Type !== 'Junction' && n1.Type !== 'Stairs' && n1.Type !== 'Elevator');
+            const isLastSegmentRoom = (i === points.length - 2 && n2.Type !== 'Junction' && n2.Type !== 'Stairs' && n2.Type !== 'Elevator');
+            
+            if (!isFirstSegmentRoom && !isLastSegmentRoom) {
+              walkingDistance += Math.hypot(p2.x - p1.x, p2.z - p1.z);
+            }
+          }
       }
       
       setActiveRoute({ points, pathNodes, distance: totalDist, walkingDistance });
