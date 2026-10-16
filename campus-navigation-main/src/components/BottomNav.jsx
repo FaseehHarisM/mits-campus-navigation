@@ -7,13 +7,15 @@ const BottomNav = ({ activeTab, setActiveTab }) => {
       bottom: 0,
       left: 0,
       right: 0,
+      height: '64px',
       backgroundColor: 'white',
       borderTop: '1px solid var(--border-color)',
       display: 'flex',
       justifyContent: 'space-around',
-      padding: '12px 0',
-      paddingBottom: 'max(12px, env(safe-area-inset-bottom))',
+      alignItems: 'center',
+      padding: '0',
       zIndex: 9999999999999,
+      boxSizing: 'border-box'
     }}>
       <NavItem tabId="home" activeTab={activeTab} setActiveTab={setActiveTab} label="Home" icon="home" />
       <NavItem tabId="navigate" activeTab={activeTab} setActiveTab={setActiveTab} label="Navigate" icon="explore" />

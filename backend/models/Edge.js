@@ -5,7 +5,7 @@ const edgeSchema = new mongoose.Schema({
   StartNodeID: { type: String, required: true },
   EndNodeID: { type: String, required: true },
   Distance: { type: Number, required: true },
-  EdgeType: { type: String, enum: ['walkway', 'stairs', 'elevator'], default: 'walkway' }
+  EdgeType: { type: String, enum: ['walkway', 'stairs', 'elevator', 'door_connection'], default: 'walkway' }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Edge', edgeSchema);

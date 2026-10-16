@@ -1,4 +1,4 @@
-﻿const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const Node = require('./models/Node');
 require('dotenv').config();
 
@@ -47,7 +47,7 @@ async function seed() {
           NodeID: room.id,
           Name: room.Name,
           Type: room.Type,
-          Floor: '1',
+          Floor: '0',
           FloorID: 'First Floor',
           X: room.X,
           Y: room.Y

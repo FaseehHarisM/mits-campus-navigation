@@ -138,17 +138,15 @@ export default function Home({ setActiveTab, currentLocation, handleNavigation }
 
       {/* Professional Admin Link & Copyright */}
       <div style={{ marginTop: '64px', textAlign: 'center', borderTop: '1px solid #dadce0', paddingTop: '24px' }}>
-        {window.innerWidth > 768 && (
-          <button 
-            onClick={() => setActiveTab('admin')} 
-            onMouseEnter={(e) => e.currentTarget.style.color = 'var(--mits-red)'}
-            onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
-            style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', cursor: 'pointer', fontFamily: "'Poppins', sans-serif", marginBottom: '16px', transition: 'color 0.2s' }}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
-            Admin Login
-          </button>
-        )}
+        <button 
+          onClick={() => setActiveTab('admin')} 
+          onMouseEnter={(e) => e.currentTarget.style.color = 'var(--mits-red)'}
+          onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-secondary)'}
+          style={{ background: 'transparent', border: 'none', color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', cursor: 'pointer', fontFamily: "'Poppins', sans-serif", marginBottom: '16px', transition: 'color 0.2s' }}
+        >
+          <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>admin_panel_settings</span>
+          Admin Login
+        </button>
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.8rem', margin: 0 }}>
           &copy; {new Date().getFullYear()} Faseeh Haris M. All rights reserved.
         </p>

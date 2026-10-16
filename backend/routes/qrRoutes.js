@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { getQRNode, getQRCodes, createQRCode, updateQRCode, deleteQRCode } = require('../controllers/qrController');
 
-router.route('/scan/:id').get(getQRNode);
+router.get('/scan', getQRNode);
+router.get('/scan/:id', getQRNode);
 
 router.route('/')
   .get(getQRCodes)

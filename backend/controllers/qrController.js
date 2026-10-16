@@ -6,21 +6,37 @@ const Node = require('../models/Node');
 // @access  Public
 exports.getQRNode = async (req, res) => {
   try {
-    const rawData = req.params.id.trim();
+    let rawData = decodeURIComponent(req.params.id || req.query.code || req.query.qr || req.query.node || req.query.id || '').trim();
 
-    // 1. Try to find an exact QR mapping (e.g., QR001 -> N3)
+    // If query string or full URL passed in param
+    const match = rawData.match(/[?&]qr=([^&#]+)/) || rawData.match(/[?&]node=([^&#]+)/);
+    if (match) rawData = decodeURIComponent(match[1]).trim();
+
+    // 1. Try exact or case-insensitive QR mapping (e.g., QR001 -> RAM-G-03)
     let qr = await QRCode.findOne({ QRID: rawData });
+    if (!qr) {
+      qr = await QRCode.findOne({ QRID: { $regex: new RegExp(`^${rawData}$`, 'i') } });
+    }
     let targetNodeID = qr ? qr.NodeID : null;
 
-    // 2. If no QR mapping, maybe they scanned a NodeID directly (e.g., N3)
+    // 2. If no QR mapping, check direct NodeID match (e.g. RAM-F1-03)
     if (!targetNodeID) {
-      const directNode = await Node.findOne({ NodeID: rawData });
+      const directNode = await Node.findOne({ NodeID: rawData }) ||
+                         await Node.findOne({ NodeID: { $regex: new RegExp(`^${rawData}$`, 'i') } });
       if (directNode) targetNodeID = directNode.NodeID;
     }
 
-    // 3. If still nothing, maybe they scanned a plain text Node Name (e.g., "Reception")
+    // 3. Strip 'QR_' prefix if present (e.g. QR_RAM-F1-03 -> RAM-F1-03)
+    if (!targetNodeID && rawData.toUpperCase().startsWith('QR_')) {
+      const stripped = rawData.substring(3);
+      const directNode = await Node.findOne({ NodeID: { $regex: new RegExp(`^${stripped}$`, 'i') } });
+      if (directNode) targetNodeID = directNode.NodeID;
+    }
+
+    // 4. Try matching by Name (exact or partial regex)
     if (!targetNodeID) {
-      const nameNode = await Node.findOne({ Name: { $regex: new RegExp(`^${rawData}$`, 'i') } });
+      const nameNode = await Node.findOne({ Name: { $regex: new RegExp(`^${rawData}$`, 'i') } }) ||
+                       await Node.findOne({ Name: { $regex: new RegExp(rawData, 'i') } });
       if (nameNode) targetNodeID = nameNode.NodeID;
     }
 

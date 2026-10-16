@@ -11,6 +11,18 @@ exports.getEdges = async (req, res) => {
 
 exports.createEdge = async (req, res) => {
   try {
+    const { StartNodeID, EndNodeID } = req.body;
+    if (StartNodeID && EndNodeID) {
+      const existing = await Edge.findOne({
+        $or: [
+          { StartNodeID, EndNodeID },
+          { StartNodeID: EndNodeID, EndNodeID: StartNodeID }
+        ]
+      });
+      if (existing) {
+        return res.status(200).json(existing);
+      }
+    }
     const edge = new Edge(req.body);
     const createdEdge = await edge.save();
     res.status(201).json(createdEdge);

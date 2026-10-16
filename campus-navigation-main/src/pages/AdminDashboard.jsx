@@ -3,6 +3,7 @@ import AdminFaculty from './AdminFaculty';
 import AdminEvents from './AdminEvents';
 import AdminNodes from './AdminNodes';
 import AdminEdges from './AdminEdges';
+import AdminStairsLifts from './AdminStairsLifts';
 import AdminQR from './AdminQR';
 import AdminFloors from './AdminFloors';
 import AdminMapEditor from './AdminMapEditor';
@@ -121,6 +122,7 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
     { id: 'floors', label: 'Floors', icon: 'layers' },
     { id: 'nodes', label: 'Locations / Nodes', icon: 'share_location' },
     { id: 'edges', label: 'Navigation / Edges', icon: 'route' },
+    { id: 'stairs_lifts', label: 'Stairs & Lifts', icon: 'elevator' },
     { id: 'qr', label: 'QR Codes', icon: 'qr_code_scanner' },
     { id: 'faculty', label: 'Faculty', icon: 'groups' },
     { id: 'events', label: 'Events', icon: 'event' },
@@ -207,6 +209,7 @@ export default function AdminDashboard({ onLogout, onGoHome }) {
           {activePage === 'floors' && <AdminFloors />}
           {activePage === 'nodes' && <AdminNodes />}
           {activePage === 'edges' && <AdminEdges />}
+          {activePage === 'stairs_lifts' && <AdminStairsLifts />}
           {activePage === 'qr' && <AdminQR />}
           {activePage === 'faculty' && <AdminFaculty />}
           {activePage === 'events' && <AdminEvents />}

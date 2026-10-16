@@ -170,16 +170,16 @@ const edges = [
 
 const faculties = [
   // Administration
-  { Name: 'Dr. Neelakantan P. C.', Department: 'Administration', Designation: 'Principal', RoomNodeID: 'N1_1' },
-  { Name: 'Dr. Chikku Abraham', Department: 'Administration', Designation: 'Vice Principal', RoomNodeID: 'N1_2' },
+  { Name: 'Dr. Neelakantan P. C.', Department: 'Administration', Designation: 'Principal', RoomNodeID: 'RAM-F1-10' },
+  { Name: 'Dr. Chikku Abraham', Department: 'Administration', Designation: 'Vice Principal', RoomNodeID: 'RAM-F1-03' },
   
   // MCA Department
-  { Name: 'Mr. Sivadas T Nair', Department: 'Master of Computer Applications', Designation: 'HOD', RoomNodeID: 'N0_6' },
-  { Name: 'Dr. Saritha K', Department: 'Master of Computer Applications', Designation: 'Professor', RoomNodeID: 'N0_6' },
-  { Name: 'Dr. Sujithra Sankar', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'N0_6' },
-  { Name: 'Ms. Jiss Kuruvilla', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'N0_6' },
-  { Name: 'Dr. Smitha Anu Thomas', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'N0_6' },
-  { Name: 'Dr. Geethu S.', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'N0_6' }
+  { Name: 'Mr. Sivadas T Nair', Department: 'Master of Computer Applications', Designation: 'HOD', RoomNodeID: 'RAM-F2-18' },
+  { Name: 'Dr. Saritha K', Department: 'Master of Computer Applications', Designation: 'Professor', RoomNodeID: 'RAM-F2-18' },
+  { Name: 'Dr. Sujithra Sankar', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'RAM-F2-18' },
+  { Name: 'Ms. Jiss Kuruvilla', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'RAM-F2-18' },
+  { Name: 'Dr. Smitha Anu Thomas', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'RAM-F2-18' },
+  { Name: 'Dr. Geethu S.', Department: 'Master of Computer Applications', Designation: 'Asst. Professor', RoomNodeID: 'RAM-F2-18' }
 ];
 
 const now = new Date();
@@ -189,22 +189,22 @@ const nextWeek = new Date();
 nextWeek.setDate(now.getDate() + 7);
 
 const events = [
-  { Title: 'MCA Inauguration', VenueNodeID: 'N0_4', StartTime: now, EndTime: tomorrow },
-  { Title: 'Einstein Talk', VenueNodeID: 'N0_3', StartTime: nextWeek, EndTime: nextWeek },
-  { Title: 'Tech Symposium 2026', VenueNodeID: 'N0_4', StartTime: tomorrow, EndTime: nextWeek },
-  { Title: 'AI & Data Science Workshop', VenueNodeID: 'N0_9', StartTime: now, EndTime: tomorrow },
-  { Title: 'Faculty General Meeting', VenueNodeID: 'N0_3', StartTime: tomorrow, EndTime: tomorrow },
-  { Title: 'TCS Placement Drive', VenueNodeID: 'N0_4', StartTime: nextWeek, EndTime: nextWeek },
-  { Title: 'MITS Hackathon Kickoff', VenueNodeID: 'N0_9', StartTime: now, EndTime: now },
-  { Title: 'Guest Lecture: Quantum Computing', VenueNodeID: 'N0_10', StartTime: nextWeek, EndTime: nextWeek },
+  { Title: 'MCA Inauguration', VenueNodeID: 'RAM-F2-09', StartTime: now, EndTime: tomorrow },
+  { Title: 'Einstein Talk', VenueNodeID: 'RAM-F2-07', StartTime: nextWeek, EndTime: nextWeek },
+  { Title: 'Tech Symposium 2026', VenueNodeID: 'RAM-F2-09', StartTime: tomorrow, EndTime: nextWeek },
+  { Title: 'AI & Data Science Workshop', VenueNodeID: 'RAM-F2-17', StartTime: now, EndTime: tomorrow },
+  { Title: 'Faculty General Meeting', VenueNodeID: 'RAM-F1-10', StartTime: tomorrow, EndTime: tomorrow },
+  { Title: 'TCS Placement Drive', VenueNodeID: 'RAM-F1-20', StartTime: nextWeek, EndTime: nextWeek },
+  { Title: 'MITS Hackathon Kickoff', VenueNodeID: 'RAM-F1-15', StartTime: now, EndTime: now },
+  { Title: 'Guest Lecture: Quantum Computing', VenueNodeID: 'RAM-F2-07', StartTime: nextWeek, EndTime: nextWeek },
 ];
 
 const qrs = [
-  { QRID: 'QR001', NodeID: 'N0_8' },  
-  { QRID: 'QR002', NodeID: 'N0_6' }, 
-  { QRID: 'QR003', NodeID: 'N1_1' }, 
-  { QRID: 'QR004', NodeID: 'NG_1' }, 
-  { QRID: 'QR005', NodeID: 'LIFT_0' }
+  { QRID: 'QR001', NodeID: 'RAM-G-03' },  
+  { QRID: 'QR002', NodeID: 'RAM-F2-18' }, 
+  { QRID: 'QR003', NodeID: 'RAM-F1-03' }, 
+  { QRID: 'QR004', NodeID: 'RAM-F1-15' }, 
+  { QRID: 'QR005', NodeID: 'RAM-G-17' }
 ];
 
 const importData = async () => {
